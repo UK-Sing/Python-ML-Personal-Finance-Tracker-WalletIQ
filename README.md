@@ -1,4 +1,4 @@
-# SpendSense AI — Intelligent Personal Finance Tracker
+# WalletIQ — Intelligent Personal Finance Tracker
 
 An AI-powered personal finance management backend built with Django REST Framework, featuring real-time transaction categorization, spending pattern analysis, expense forecasting, anomaly detection, and smart budget recommendations.
 
