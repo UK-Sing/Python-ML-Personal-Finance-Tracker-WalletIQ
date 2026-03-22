@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+staticfiles/
+media/
+
+# ML model artifacts
+backend/ai_engine/ml_models/*.pkl
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+
+# Windsurf / Cascade
+.windsurf/

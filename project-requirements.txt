@@ -1,0 +1,304 @@
+# SpendSense AI — Technical Design Document
+
+## 1. Project Overview
+
+SpendSense AI is an intelligent personal finance application that analyzes user transactions, identifies spending patterns, predicts future financial behavior, and provides personalized recommendations. The system integrates artificial intelligence directly into its core workflow to enable proactive financial decision-making rather than passive tracking.
+
+---
+
+## 2. Core Features
+
+### 2.1 Transaction Management
+
+* Manual transaction entry (amount, category, date, description)
+* Bulk import (CSV or simulated bank API)
+* Automatic categorization using NLP models
+* Edit/delete transactions
+
+### 2.2 AI-Powered Insights
+
+* Spending pattern analysis (weekly/monthly trends)
+* Anomaly detection (unusual or high-value transactions)
+* Behavioral pattern recognition (recurring habits)
+* Predictive analytics (future expenses and cash flow)
+
+### 2.3 Budgeting System
+
+* User-defined budgets per category
+* Real-time budget tracking
+* Overspending alerts
+* Budget recommendations based on historical data
+
+### 2.4 Financial Coaching (AI Assistant)
+
+* Conversational interface for financial queries
+* Context-aware advice based on user data
+* Suggestions for saving and spending optimization
+
+### 2.5 Goal Management
+
+* Savings goal creation
+* Progress tracking
+* AI-generated strategies to achieve goals faster
+
+### 2.6 Visualization Dashboard
+
+* Category-wise spending charts
+* Time-series graphs
+* Prediction visualizations
+* Financial health indicators
+
+---
+
+## 3. Functional Requirements
+
+### 3.1 User Management
+
+* User registration and authentication
+* Secure login (JWT-based authentication)
+* Profile management
+
+### 3.2 Data Processing
+
+* Store and retrieve transaction data
+* Categorize transactions automatically
+* Maintain historical financial records
+
+### 3.3 AI Processing
+
+* Analyze transaction data periodically
+* Generate predictions and insights
+* Provide recommendation outputs
+
+### 3.4 Notification System
+
+* Budget alerts
+* Anomaly alerts
+* Goal reminders
+
+---
+
+## 4. Non-Functional Requirements
+
+### 4.1 Performance
+
+* API response time < 2 seconds
+* Efficient query handling for large datasets
+
+### 4.2 Security
+
+* Encrypted data storage
+* Secure API endpoints
+* Authentication and authorization controls
+
+### 4.3 Scalability
+
+* Modular backend design
+* Horizontal scalability via cloud deployment
+
+### 4.4 Usability
+
+* Intuitive UI (Qt-based desktop interface)
+* Minimal user input required
+
+---
+
+## 5. System Architecture
+
+### 5.1 Architecture Style
+
+* Layered Architecture
+* AI-Integrated Service-Oriented Design
+
+### 5.2 High-Level Components
+
+1. Frontend Layer (Qt)
+2. Backend Layer (Django REST API)
+3. AI/ML Processing Layer
+4. Database Layer (MongoDB)
+
+---
+
+## 6. Technology Stack
+
+### Frontend
+
+* Qt (PyQt / PySide)
+* Python-based UI logic
+
+### Backend
+
+* Django
+* Django REST Framework (DRF)
+
+### Database
+
+* MongoDB (NoSQL document store)
+
+### AI/ML
+
+* Python (scikit-learn, pandas, numpy)
+* Optional: TensorFlow / PyTorch
+
+---
+
+## 7. Data Model (MongoDB Collections)
+
+### 7.1 Users Collection
+
+```
+{
+  user_id: ObjectId,
+  name: string,
+  email: string,
+  password_hash: string,
+  created_at: datetime
+}
+```
+
+### 7.2 Transactions Collection
+
+```
+{
+  transaction_id: ObjectId,
+  user_id: ObjectId,
+  amount: float,
+  category: string,
+  description: string,
+  date: datetime
+}
+```
+
+### 7.3 Budgets Collection
+
+```
+{
+  budget_id: ObjectId,
+  user_id: ObjectId,
+  category: string,
+  limit: float,
+  period: string
+}
+```
+
+### 7.4 Insights Collection
+
+```
+{
+  insight_id: ObjectId,
+  user_id: ObjectId,
+  type: string,
+  content: string,
+  created_at: datetime
+}
+```
+
+---
+
+## 8. Backend Structure (Django)
+
+### 8.1 Modules
+
+* accounts/ → user authentication
+* transactions/ → transaction handling
+* budgets/ → budget logic
+* insights/ → AI outputs
+* ai_engine/ → ML processing
+
+### 8.2 API Endpoints
+
+* POST /api/register
+* POST /api/login
+* GET /api/transactions
+* POST /api/transactions
+* GET /api/insights
+* POST /api/budget
+
+---
+
+## 9. AI/ML Implementation
+
+### 9.1 Transaction Categorization
+
+* Technique: NLP + keyword classification
+* Model: Naive Bayes / Logistic Regression
+
+### 9.2 Spending Pattern Analysis
+
+* Technique: Clustering (K-Means)
+* Output: Spending behavior groups
+
+### 9.3 Prediction Engine
+
+* Technique: Time Series Forecasting
+* Models: ARIMA / LSTM
+* Output: Future expense estimates
+
+### 9.4 Recommendation System
+
+* Hybrid approach:
+
+  * Rule-based logic
+  * ML-based personalization
+
+---
+
+## 10. Data Flow
+
+1. User inputs transaction via Qt interface
+2. Request sent to Django API
+3. Data stored in MongoDB
+4. AI engine processes data periodically
+5. Insights generated and stored
+6. Frontend fetches insights and displays to user
+
+---
+
+## 11. Frontend Structure (Qt)
+
+### Components
+
+* Login Window
+* Dashboard Window
+* Transaction Entry Form
+* Budget Manager
+* AI Chat Interface
+
+### Communication
+
+* REST API calls to Django backend
+* JSON-based data exchange
+
+---
+
+## 12. Deployment Architecture
+
+### Local Development
+
+* Qt frontend (desktop app)
+* Django server (localhost)
+* MongoDB instance
+
+### Production (Optional)
+
+* Backend hosted on cloud (AWS / GCP)
+* MongoDB Atlas (cloud database)
+* Desktop app distributed as executable
+
+---
+
+## 13. Future Enhancements
+
+* Bank API integration
+* Real-time notifications
+* Mobile app version
+* Advanced deep learning models
+* Multi-user analytics
+
+---
+
+## 14. Summary
+
+SpendSense AI integrates AI-driven analytics into personal finance management by combining a Qt-based frontend, Django backend, MongoDB database, and machine learning models. The system transforms raw financial data into actionable insights, enabling users to improve financial behavior and decision-making.
+
+---
