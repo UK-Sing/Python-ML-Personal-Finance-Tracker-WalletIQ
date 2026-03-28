@@ -10,17 +10,20 @@ from backend.db_client import get_collection
 
 
 def _sync_to_mongo(transaction: Transaction):
-    col = get_collection('transactions')
-    doc = {
-        'django_id': transaction.id,
-        'user_id': str(transaction.user_id),
-        'amount': transaction.amount,
-        'category': transaction.category,
-        'description': transaction.description,
-        'date': transaction.date.isoformat(),
-        'auto_categorized': transaction.auto_categorized,
-    }
-    col.update_one({'django_id': transaction.id}, {'$set': doc}, upsert=True)
+    try:
+        col = get_collection('transactions')
+        doc = {
+            'django_id': transaction.id,
+            'user_id': str(transaction.user_id),
+            'amount': transaction.amount,
+            'category': transaction.category,
+            'description': transaction.description,
+            'date': transaction.date.isoformat(),
+            'auto_categorized': transaction.auto_categorized,
+        }
+        col.update_one({'django_id': transaction.id}, {'$set': doc}, upsert=True)
+    except Exception:
+        return
 
 
 @api_view(['GET', 'POST'])
@@ -66,7 +69,10 @@ def transaction_detail(request, pk):
             return Response(TransactionSerializer(tx).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    get_collection('transactions').delete_one({'django_id': tx.id})
+    try:
+        get_collection('transactions').delete_one({'django_id': tx.id})
+    except Exception:
+        pass
     tx.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 

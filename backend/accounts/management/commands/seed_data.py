@@ -90,7 +90,10 @@ class Command(BaseCommand):
         Budget.objects.get_or_create(user=user, category='Shopping', period='monthly', defaults={'limit': 6000})
         self.stdout.write(self.style.SUCCESS('Budgets created.'))
 
-        tx_col = get_collection('transactions')
+        try:
+            tx_col = get_collection('transactions')
+        except Exception:
+            tx_col = None
         now = dj_timezone.now()
         created_count = 0
 
@@ -108,22 +111,23 @@ class Command(BaseCommand):
                     date=date,
                     auto_categorized=False,
                 )
-                try:
-                    tx_col.update_one(
-                        {'django_id': tx.id},
-                        {'$set': {
-                            'django_id': tx.id,
-                            'user_id': str(user.id),
-                            'amount': tx.amount,
-                            'category': tx.category,
-                            'description': tx.description,
-                            'date': tx.date.isoformat(),
-                            'auto_categorized': False,
-                        }},
-                        upsert=True,
-                    )
-                except Exception:
-                    pass
+                if tx_col is not None:
+                    try:
+                        tx_col.update_one(
+                            {'django_id': tx.id},
+                            {'$set': {
+                                'django_id': tx.id,
+                                'user_id': str(user.id),
+                                'amount': tx.amount,
+                                'category': tx.category,
+                                'description': tx.description,
+                                'date': tx.date.isoformat(),
+                                'auto_categorized': False,
+                            }},
+                            upsert=True,
+                        )
+                    except Exception:
+                        pass
                 created_count += 1
 
         self.stdout.write(self.style.SUCCESS(

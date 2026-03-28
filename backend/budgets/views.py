@@ -9,15 +9,18 @@ from backend.db_client import get_collection
 
 
 def _sync_to_mongo(budget: Budget):
-    col = get_collection('budgets')
-    doc = {
-        'django_id': budget.id,
-        'user_id': str(budget.user_id),
-        'category': budget.category,
-        'limit': budget.limit,
-        'period': budget.period,
-    }
-    col.update_one({'django_id': budget.id}, {'$set': doc}, upsert=True)
+    try:
+        col = get_collection('budgets')
+        doc = {
+            'django_id': budget.id,
+            'user_id': str(budget.user_id),
+            'category': budget.category,
+            'limit': budget.limit,
+            'period': budget.period,
+        }
+        col.update_one({'django_id': budget.id}, {'$set': doc}, upsert=True)
+    except Exception:
+        return
 
 
 @api_view(['GET', 'POST'])
@@ -51,6 +54,9 @@ def budget_detail(request, pk):
             return Response(BudgetSerializer(budget).data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    get_collection('budgets').delete_one({'django_id': budget.id})
+    try:
+        get_collection('budgets').delete_one({'django_id': budget.id})
+    except Exception:
+        pass
     budget.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
