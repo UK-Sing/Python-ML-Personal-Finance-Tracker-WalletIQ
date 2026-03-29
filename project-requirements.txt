@@ -1,8 +1,8 @@
-# SpendSense AI — Technical Design Document
+# WalletIQ — Technical Design Document
 
 ## 1. Project Overview
 
-SpendSense AI is an intelligent personal finance application that analyzes user transactions, identifies spending patterns, predicts future financial behavior, and provides personalized recommendations. The system integrates artificial intelligence directly into its core workflow to enable proactive financial decision-making rather than passive tracking.
+WalletIQ is an intelligent personal finance application that analyzes user transactions, identifies spending patterns, predicts future financial behavior, and provides personalized recommendations. The system integrates artificial intelligence directly into its core workflow to enable proactive financial decision-making rather than passive tracking.
 
 ---
 
@@ -299,6 +299,6 @@ SpendSense AI is an intelligent personal finance application that analyzes user 
 
 ## 14. Summary
 
-SpendSense AI integrates AI-driven analytics into personal finance management by combining a Qt-based frontend, Django backend, MongoDB database, and machine learning models. The system transforms raw financial data into actionable insights, enabling users to improve financial behavior and decision-making.
+WalletIQ integrates AI-driven analytics into personal finance management by combining a Qt-based frontend, Django backend, MongoDB database, and machine learning models. The system transforms raw financial data into actionable insights, enabling users to improve financial behavior and decision-making.
 
 ---

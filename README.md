@@ -54,8 +54,8 @@ WalletIQ/
 
 ```bash
 # Clone the repo
-git clone https://github.com/<your-username>/SpendSense-AI.git
-cd SpendSense-AI
+git clone https://github.com/UK-Sing/Python-ML-Personal-Finance-Tracker-WalletIQ.git
+cd Python-ML-Personal-Finance-Tracker-WalletIQ
 
 # Create virtual environment
 python -m venv .venv
@@ -129,7 +129,7 @@ curl http://localhost:8000/api/insights \
 | `DJANGO_SECRET_KEY` | `change-me-in-production` | Django secret key |
 | `MONGO_HOST` | `localhost` | MongoDB host |
 | `MONGO_PORT` | `27017` | MongoDB port |
-| `MONGO_DB` | `spendsense` | MongoDB database name |
+| `MONGO_DB` | `walletiq` | MongoDB database name |
 | `MONGO_USER` | _(empty)_ | MongoDB username |
 | `MONGO_PASSWORD` | _(empty)_ | MongoDB password |
 | `MONGO_AUTH_SOURCE` | `admin` | MongoDB auth database |

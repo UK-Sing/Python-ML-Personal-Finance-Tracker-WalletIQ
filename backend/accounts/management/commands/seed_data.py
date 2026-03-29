@@ -68,7 +68,7 @@ class Command(BaseCommand):
         user, created = User.objects.get_or_create(
             username='demo',
             defaults={
-                'email': 'demo@spendsense.ai',
+                'email': 'demo@walletiq.ai',
                 'first_name': 'Demo',
                 'last_name': 'User',
             },

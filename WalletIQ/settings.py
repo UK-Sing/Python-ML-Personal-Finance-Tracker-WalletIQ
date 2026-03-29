@@ -90,7 +90,7 @@ DATABASES = {
 MONGODB_SETTINGS = {
     'HOST': os.environ.get('MONGO_HOST', 'localhost'),
     'PORT': int(os.environ.get('MONGO_PORT', 27017)),
-    'DB_NAME': os.environ.get('MONGO_DB', 'spendsense'),
+    'DB_NAME': os.environ.get('MONGO_DB', 'walletiq'),
     'USERNAME': os.environ.get('MONGO_USER', ''),
     'PASSWORD': os.environ.get('MONGO_PASSWORD', ''),
     'AUTH_SOURCE': os.environ.get('MONGO_AUTH_SOURCE', 'admin'),
