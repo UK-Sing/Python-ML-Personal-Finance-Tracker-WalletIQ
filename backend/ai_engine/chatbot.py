@@ -1,82 +1,56 @@
-import os
 import re
-import yaml
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 
 # ---------------------------------------------------------------------------
-# 1.  ChatterBot-corpus loader  — trains a TF-IDF retrieval model on the
-#     English YAML corpora shipped with `chatterbot-corpus`.
+# 1.  Curated small-talk dictionary — exact and substring keyword matching.
+#     No external corpus. Only finance-contextual responses.
 # ---------------------------------------------------------------------------
 
-_corpus_vectorizer: TfidfVectorizer | None = None
-_corpus_prompts: list[str] = []
-_corpus_responses: list[str] = []
-_corpus_matrix = None
+_SMALL_TALK: list[tuple[list[str], str]] = [
+    (
+        ['hello', 'hi', 'hey', 'howdy', 'good morning', 'good afternoon', 'good evening'],
+        "Hi! I'm your WalletIQ AI Coach. Ask me about your spending, budgets, predictions, or anomalies.",
+    ),
+    (
+        ['thank you', 'thanks', 'cheers', 'thx'],
+        "You're welcome! Let me know if you need more financial insights.",
+    ),
+    (
+        ['bye', 'goodbye', 'see you', 'cya', 'ttyl'],
+        "Goodbye! Keep tracking your spending for better financial health.",
+    ),
+    (
+        ['help', 'what can you do', 'capabilities', 'options'],
+        (
+            "I can help you with:\n"
+            "  • Spending summaries — \"How much did I spend on Groceries?\"\n"
+            "  • Budget status      — \"Am I over budget?\"\n"
+            "  • Anomaly detection  — \"Any unusual transactions?\"\n"
+            "  • Expense forecast   — \"Predict my spending next month\"\n"
+            "  • Recommendations    — \"Give me saving tips\""
+        ),
+    ),
+    (
+        ['who are you', 'what are you', 'tell me about yourself'],
+        "I'm the WalletIQ AI Coach — a rule-based financial assistant that analyses your spending, tracks budgets, and surfaces ML-powered insights.",
+    ),
+    (
+        ['how are you', 'how do you do'],
+        "I'm running great! Ready to help you take control of your finances.",
+    ),
+    (
+        ['ok', 'okay', 'alright', 'got it', 'understood', 'cool', 'great', 'nice'],
+        "Let me know if there's anything else I can help you with!",
+    ),
+]
 
 
-def _get_corpus_dir() -> str:
-    import chatterbot_corpus
-    return os.path.join(os.path.dirname(chatterbot_corpus.__file__), 'data', 'english')
-
-
-def _load_corpus():
-    """Load all English chatterbot-corpus YAML files and build a TF-IDF
-    retrieval index so we can find the best-matching response for any input."""
-    global _corpus_vectorizer, _corpus_prompts, _corpus_responses, _corpus_matrix
-
-    corpus_dir = _get_corpus_dir()
-    prompts: list[str] = []
-    responses: list[str] = []
-
-    for fname in sorted(os.listdir(corpus_dir)):
-        if not fname.endswith('.yml'):
-            continue
-        fpath = os.path.join(corpus_dir, fname)
-        with open(fpath, 'r', encoding='utf-8') as fh:
-            data = yaml.safe_load(fh)
-        for convo in data.get('conversations', []):
-            if len(convo) >= 2:
-                prompts.append(str(convo[0]).lower().strip())
-                responses.append(str(convo[1]).strip())
-
-    # Add custom finance-flavoured small-talk pairs
-    finance_pairs = [
-        ("hello", "Hi there! I'm your WalletIQ AI Coach. Ask me about your spending, budgets, or predictions."),
-        ("hi", "Hey! I can help with spending analysis, budget checks, anomaly detection, and more."),
-        ("hey", "Hello! Try asking me things like 'How much did I spend on Groceries?' or 'Am I over budget?'"),
-        ("thanks", "You're welcome! Let me know if you need more financial insights."),
-        ("thank you", "Happy to help! Feel free to ask about your finances anytime."),
-        ("bye", "Goodbye! Keep tracking your spending for better insights."),
-        ("goodbye", "See you later! Remember to check your budgets regularly."),
-        ("help", "I can help with: spending summaries, budget status, anomaly detection, expense predictions, and savings recommendations. Just ask!"),
-        ("what can you do", "I can analyze your spending, check budgets, detect anomalies, predict future expenses, and give savings recommendations."),
-        ("who are you", "I'm the WalletIQ AI Coach — your personal finance assistant powered by machine learning."),
-    ]
-    for p, r in finance_pairs:
-        prompts.append(p)
-        responses.append(r)
-
-    _corpus_prompts.clear()
-    _corpus_prompts.extend(prompts)
-    _corpus_responses.clear()
-    _corpus_responses.extend(responses)
-    _corpus_vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-    _corpus_matrix = _corpus_vectorizer.fit_transform(prompts)
-
-
-def _corpus_reply(text: str, threshold: float = 0.15) -> str | None:
-    """Return the best corpus response if similarity exceeds *threshold*."""
-    global _corpus_vectorizer, _corpus_matrix
-    if _corpus_vectorizer is None:
-        _load_corpus()
-
-    vec = _corpus_vectorizer.transform([text.lower().strip()])
-    scores = cosine_similarity(vec, _corpus_matrix).flatten()
-    best_idx = int(np.argmax(scores))
-    if scores[best_idx] >= threshold:
-        return _corpus_responses[best_idx]
+def _small_talk_reply(text: str) -> str | None:
+    """Return a curated response if the input matches a small-talk keyword."""
+    lower = text.lower().strip()
+    for keywords, response in _SMALL_TALK:
+        for kw in keywords:
+            if lower == kw or lower.startswith(kw + ' ') or lower.endswith(' ' + kw):
+                return response
     return None
 
 
@@ -301,7 +275,7 @@ def get_chat_response(user_id: str, message: str) -> dict:
 
     Priority order:
       1. Finance intent  → route to existing AI modules
-      2. Corpus match    → ChatterBot-corpus trained TF-IDF retrieval
+      2. Small-talk      → curated keyword-matched responses
       3. Fallback        → help text listing available commands
     """
     text = message.strip()
@@ -320,10 +294,10 @@ def get_chat_response(user_id: str, message: str) -> dict:
                 'intent': intent,
             }
 
-    # 2. Corpus-trained retrieval (chatterbot-corpus)
-    corpus_response = _corpus_reply(text)
-    if corpus_response:
-        return {'response': corpus_response, 'intent': 'general'}
+    # 2. Curated small-talk
+    small_talk = _small_talk_reply(text)
+    if small_talk:
+        return {'response': small_talk, 'intent': 'general'}
 
     # 3. Fallback
     return {'response': FALLBACK_MESSAGE, 'intent': None}
